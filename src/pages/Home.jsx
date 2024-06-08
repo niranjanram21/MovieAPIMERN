@@ -1,24 +1,26 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import './Home.css'
 import Header from '../components/Header'
 import Hero from '../components/Hero'
-import { useDispatch } from 'react-redux'
-import { getGenres } from '../store/index'
+import Trending from '../components/Trending'
+import NewReleases from '../components/NewReleases'
+import Popular from '../components/Popular'
+import TopRated from '../components/TopRated'
+import BlockbusterMovies from '../components/BlockbusterMovies'
 
 const Home = () => {
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        dispatch(getGenres());
-    }, []);
 
     return (
         <div>
-            <div className='home-container'>
+            <div className='home-container mb-4'>
                 <Header />
                 <Hero />
             </div>
-
+            <Trending />
+            <NewReleases />
+            <BlockbusterMovies />
+            <TopRated />
+            <Popular />
         </div>
     )
 }
