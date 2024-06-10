@@ -7,25 +7,32 @@ import 'swiper/css';
 import 'swiper/css/scrollbar';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import './swiper.css';
+import '../swiper.css';
 
-import { fetchTrending } from '../store/movieSlice';
-import SwiperComponent from './SwiperComponent';
+import { fetchTrending, fetchTrailers } from '../../store/movieSlice';
+import SwiperComponent from '../SwiperComponent';
 
 const Trending = () => {
     const dispatch = useDispatch();
     const { trending, status, error } = useSelector((state) => state.movies);
 
     useEffect(() => {
-        dispatch(fetchTrending());
+        const fetchTrendingMovies = async () => {
+            const actionResult = await dispatch(fetchTrending());
+            if (fetchTrending.fulfilled.match(actionResult)) {
+                dispatch(fetchTrailers(actionResult.payload));
+            }
+        };
+
+        fetchTrendingMovies();
     }, [dispatch]);
 
-    if (status === 'loading') return <div>Loading...</div>;
+    if (status === 'loading' || !trending) return <div>Loading...</div>;
     if (status === 'failed') return <div>Error: {error}</div>;
 
     return (
         <>
-            <SwiperComponent data={trending} title="Trending" />
+            {trending && <SwiperComponent data={trending} title="Trending" />}
         </>
     );
 };
