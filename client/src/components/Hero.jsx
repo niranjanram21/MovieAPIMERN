@@ -27,7 +27,7 @@ const Hero = () => {
     const trailerId = trailerLink ? new URL(trailerLink).searchParams.get('v') : null;
 
     return (
-        <div className="relative h-screen flex flex-col justify-center items-start text-white px-8">
+        <div className="relative h-screen flex flex-col justify-center items-start text-white px-4">
             <div className="absolute top-0 left-0 w-full h-full bg-black opacity-25 z-0"></div>
             <div className="relative z-10">
                 {showTrailer && trailerId ? (

@@ -4,7 +4,7 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 import '../swiper.css';
-import { fetchBlockbusterMovies, fetchTrailers } from '../../store/movieSlice';
+import { fetchBlockbusterMovies } from '../../store/movieSlice';
 import SwiperComponent from '../SwiperComponent';
 
 const BlockbusterMovies = () => {
@@ -12,14 +12,7 @@ const BlockbusterMovies = () => {
     const { blockbusters, status, error } = useSelector((state) => state.movies);
 
     useEffect(() => {
-        const fetchTrendingMovies = async () => {
-            const actionResult = await dispatch(fetchBlockbusterMovies());
-            if (fetchBlockbusterMovies.fulfilled.match(actionResult)) {
-                dispatch(fetchTrailers(actionResult.payload));
-            }
-        };
-
-        fetchTrendingMovies();
+        dispatch(fetchBlockbusterMovies());
     }, [dispatch]);
 
     if (status === 'loading' || !blockbusters) return <div>Loading...</div>;
@@ -27,7 +20,7 @@ const BlockbusterMovies = () => {
 
     return (
         <>
-            {blockbusters && <SwiperComponent data={blockbusters} title="BlockBuster Movies" />}
+            {blockbusters && <SwiperComponent data={blockbusters} title="Blockbuster Movies" />}
         </>
     );
 };

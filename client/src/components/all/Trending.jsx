@@ -9,7 +9,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import '../swiper.css';
 
-import { fetchTrending, fetchTrailers } from '../../store/movieSlice';
+import { fetchTrending } from '../../store/movieSlice';
 import SwiperComponent from '../SwiperComponent';
 
 const Trending = () => {
@@ -17,14 +17,7 @@ const Trending = () => {
     const { trending, status, error } = useSelector((state) => state.movies);
 
     useEffect(() => {
-        const fetchTrendingMovies = async () => {
-            const actionResult = await dispatch(fetchTrending());
-            if (fetchTrending.fulfilled.match(actionResult)) {
-                dispatch(fetchTrailers(actionResult.payload));
-            }
-        };
-
-        fetchTrendingMovies();
+        dispatch(fetchTrending());
     }, [dispatch]);
 
     if (status === 'loading' || !trending) return <div>Loading...</div>;

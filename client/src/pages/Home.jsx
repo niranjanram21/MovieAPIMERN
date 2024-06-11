@@ -13,7 +13,7 @@ const Home = () => {
 
     return (
         <div>
-            <div className='home-container mb-4'>
+            <div className='home-container mb-6'>
                 <Header />
                 <Hero />
             </div>

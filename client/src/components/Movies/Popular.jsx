@@ -4,7 +4,7 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 import '../swiper.css';
-import { fetchPopularMovies, fetchTrailers } from '../../store/movieSlice';
+import { fetchPopularMovies } from '../../store/movieSlice';
 import SwiperComponent from '../SwiperComponent';
 
 const Popular = () => {
@@ -12,14 +12,7 @@ const Popular = () => {
     const { popular, status, error } = useSelector((state) => state.movies);
 
     useEffect(() => {
-        const fetchTrendingMovies = async () => {
-            const actionResult = await dispatch(fetchPopularMovies());
-            if (fetchPopularMovies.fulfilled.match(actionResult)) {
-                dispatch(fetchTrailers(actionResult.payload));
-            }
-        };
-
-        fetchTrendingMovies();
+        dispatch(fetchPopularMovies());
     }, [dispatch]);
 
     if (status === 'loading' || !popular) return <div>Loading...</div>;
@@ -28,7 +21,6 @@ const Popular = () => {
     return (
         <>
             {popular && <SwiperComponent data={popular} title="Popular Movies" />}
-
         </>
     );
 };

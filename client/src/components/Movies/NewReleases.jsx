@@ -4,7 +4,7 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 import '../swiper.css';
-import { fetchNewReleases, fetchTrailers } from '../../store/movieSlice';
+import { fetchNewReleases } from '../../store/movieSlice';
 import SwiperComponent from '../SwiperComponent';
 
 const NewReleases = () => {
@@ -12,14 +12,7 @@ const NewReleases = () => {
     const { newReleases, status, error } = useSelector((state) => state.movies);
 
     useEffect(() => {
-        const fetchTrendingMovies = async () => {
-            const actionResult = await dispatch(fetchNewReleases());
-            if (fetchNewReleases.fulfilled.match(actionResult)) {
-                dispatch(fetchTrailers(actionResult.payload));
-            }
-        };
-
-        fetchTrendingMovies();
+        dispatch(fetchNewReleases());
     }, [dispatch]);
 
     if (status === 'loading' || !newReleases) return <div>Loading...</div>;
@@ -27,7 +20,7 @@ const NewReleases = () => {
 
     return (
         <>
-           { newReleases && <SwiperComponent data={newReleases} title="New Releases" />}
+            {newReleases && <SwiperComponent data={newReleases} title="New Releases" />}
         </>
     );
 };

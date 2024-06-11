@@ -1,19 +1,19 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { API_KEY, TMDB_BASE_URL } from '../utils/constants';
-import fetchTrailer from '../utils/fetchTrailer';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { API_KEY, TMDB_BASE_URL } from "../utils/constants";
+import fetchTrailer from "../utils/fetchTrailer";
 
 // Async thunks for fetching data from TMDB
 export const fetchStrangerThingsTrailer = createAsyncThunk(
-  'movies/fetchStrangerThingsTrailer',
+  "movies/fetchStrangerThingsTrailer",
   async () => {
-    const trailerUrl = await fetchTrailer(66732, 'tv');
+    const trailerUrl = await fetchTrailer(66732, "tv");
     return trailerUrl;
   }
 );
 
 export const fetchTrending = createAsyncThunk(
-  'movies/fetchTrending',
+  "movies/fetchTrending",
   async () => {
     const response = await axios.get(
       `${TMDB_BASE_URL}/trending/all/week?api_key=${API_KEY}`
@@ -23,7 +23,7 @@ export const fetchTrending = createAsyncThunk(
 );
 
 export const fetchNewReleases = createAsyncThunk(
-  'movies/fetchNewReleases',
+  "movies/fetchNewReleases",
   async () => {
     const response = await axios.get(
       `${TMDB_BASE_URL}/movie/now_playing?api_key=${API_KEY}`
@@ -33,7 +33,7 @@ export const fetchNewReleases = createAsyncThunk(
 );
 
 export const fetchBlockbusterMovies = createAsyncThunk(
-  'movies/fetchBlockbusters',
+  "movies/fetchBlockbusters",
   async () => {
     const response = await axios.get(
       `${TMDB_BASE_URL}/movie/top_rated?api_key=${API_KEY}`
@@ -43,7 +43,7 @@ export const fetchBlockbusterMovies = createAsyncThunk(
 );
 
 export const fetchPopularMovies = createAsyncThunk(
-  'movies/fetchPopular',
+  "movies/fetchPopular",
   async () => {
     const response = await axios.get(
       `${TMDB_BASE_URL}/movie/popular?api_key=${API_KEY}`
@@ -52,8 +52,9 @@ export const fetchPopularMovies = createAsyncThunk(
   }
 );
 
-export const fetchTopRatedMovies = createAsyncThunk(
-  'movies/fetchTopRated',
+// TV Shows
+export const fetchTopRatedTV = createAsyncThunk(
+  "movies/fetchTopRated",
   async () => {
     const response = await axios.get(
       `${TMDB_BASE_URL}/tv/top_rated?api_key=${API_KEY}`
@@ -62,23 +63,60 @@ export const fetchTopRatedMovies = createAsyncThunk(
   }
 );
 
-// Async thunk to fetch trailers for each movie or TV show
-export const fetchTrailers = createAsyncThunk(
-  'movies/fetchTrailers',
-  async (movies) => {
-    const trailers = await Promise.all(
-      movies.map(async (movie) => {
-        const type = movie.media_type === 'tv' ? 'tv' : 'movie';
-        const trailerUrl = await fetchTrailer(movie.id, type);
-        return { ...movie, trailerUrl };
-      })
+export const fetchAiringTodayTV = createAsyncThunk(
+  "movies/fetchArrivingTodayTV",
+  async () => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/tv/airing_today?api_key=${API_KEY}`
     );
-    return trailers;
+    return response.data.results;
+  }
+);
+
+export const fetchOnTheAirTV = createAsyncThunk(
+  "movies/fetchOnTheAirTV",
+  async () => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/tv/on_the_air?api_key=${API_KEY}`
+    );
+    return response.data.results;
+  }
+);
+
+export const fetchPopularTV = createAsyncThunk(
+  "movies/fetchPopularTV", // Corrected thunk name
+  async () => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/tv/popular?api_key=${API_KEY}`
+    );
+    return response.data.results;
+  }
+);
+
+// Individual Movie Detail
+export const fetchMovieDetails = createAsyncThunk(
+  "movies/fetchMovieDetails",
+  async (movieId) => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/movie/${movieId}?api_key=${API_KEY}`
+    );
+    return response.data;
+  }
+);
+
+// Search Query
+export const fetchSearchResults = createAsyncThunk(
+  "movies/fetchSearchResults",
+  async ({ query, type }) => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/search/${type}?api_key=${API_KEY}&query=${query}`
+    );
+    return { results: response.data.results, type };
   }
 );
 
 const movieSlice = createSlice({
-  name: 'movies',
+  name: "movies",
   initialState: {
     trending: [],
     newReleases: [],
@@ -86,21 +124,31 @@ const movieSlice = createSlice({
     popular: [],
     trailerLink: null,
     topRated: [],
-    status: 'idle',
+    airingTodayTV: [],
+    onTheAirTV: [],
+    popularTV: [],
+    movieDetails: {},
+    searchResults: {
+      movies: [],
+      tvShows: [],
+      people: [],
+    },
+    status: "idle",
     error: null,
   },
+
   reducers: {},
   extraReducers: (builder) => {
     builder
       .addCase(fetchTrending.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchTrending.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         state.trending = action.payload;
       })
       .addCase(fetchTrending.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.error.message;
       })
       .addCase(fetchNewReleases.fulfilled, (state, action) => {
@@ -112,19 +160,38 @@ const movieSlice = createSlice({
       .addCase(fetchPopularMovies.fulfilled, (state, action) => {
         state.popular = action.payload;
       })
-      .addCase(fetchTopRatedMovies.fulfilled, (state, action) => {
+      .addCase(fetchTopRatedTV.fulfilled, (state, action) => {
         state.topRated = action.payload;
+      })
+      .addCase(fetchAiringTodayTV.fulfilled, (state, action) => {
+        state.airingTodayTV = action.payload;
+      })
+      .addCase(fetchOnTheAirTV.fulfilled, (state, action) => {
+        state.onTheAirTV = action.payload;
+      })
+      .addCase(fetchPopularTV.fulfilled, (state, action) => {
+        state.popularTV = action.payload;
       })
       .addCase(fetchStrangerThingsTrailer.fulfilled, (state, action) => {
         state.trailerLink = action.payload;
       })
-      .addCase(fetchTrailers.fulfilled, (state, action) => {
-        const { trending, newReleases, blockbusters, popular, topRated } = action.payload;
-        state.trending = trending;
-        state.newReleases = newReleases;
-        state.blockbusters = blockbusters;
-        state.popular = popular;
-        state.topRated = topRated;
+      .addCase(fetchMovieDetails.fulfilled, (state, action) => {
+        state.movieDetails = action.payload;
+      })
+      .addCase(fetchSearchResults.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        const { results, type } = action.payload;
+        if (type === "movie") {
+          state.searchResults.movies = results;
+        } else if (type === "tv") {
+          state.searchResults.tvShows = results;
+        } else if (type === "person") {
+          state.searchResults.people = results;
+        }
+      })
+      .addCase(fetchSearchResults.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
       });
   },
 });

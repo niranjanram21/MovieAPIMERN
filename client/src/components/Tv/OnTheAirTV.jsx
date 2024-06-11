@@ -4,25 +4,25 @@ import 'swiper/css';
 import 'swiper/css/free-mode';
 import 'swiper/css/pagination';
 import '../swiper.css';
-import { fetchTopRatedTV } from '../../store/movieSlice';
+import { fetchOnTheAirTV } from '../../store/movieSlice';
 import SwiperComponent from '../SwiperComponent';
 
-const TopRated = () => {
+const OnTheAirTV = () => {
     const dispatch = useDispatch();
-    const { topRated, status, error } = useSelector((state) => state.movies);
+    const { onTheAirTV, status, error } = useSelector((state) => state.movies);
 
     useEffect(() => {
-        dispatch(fetchTopRatedTV());
+        dispatch(fetchOnTheAirTV());
     }, [dispatch]);
 
-    if (status === 'loading' || !topRated) return <div>Loading...</div>;
+    if (status === 'loading' || !onTheAirTV) return <div>Loading...</div>;
     if (status === 'failed') return <div>Error: {error}</div>;
 
     return (
         <>
-            {topRated && <SwiperComponent data={topRated} title="Top Rated TV Shows" />}
+            {onTheAirTV && <SwiperComponent data={onTheAirTV} title="On The Air" />}
         </>
     );
 };
 
-export default TopRated;
+export default OnTheAirTV;

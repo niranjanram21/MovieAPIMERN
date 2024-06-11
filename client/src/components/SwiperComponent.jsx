@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/scrollbar';
@@ -7,26 +8,23 @@ import 'swiper/css/pagination';
 import './swiper.css';
 import { Keyboard, Scrollbar, Navigation, Pagination } from 'swiper/modules';
 
-const Swiper1 = ({ data, title }) => {
-    const [hoveredMovie, setHoveredMovie] = useState(null);
 
-    const handleMouseEnter = (movie) => {
-        setHoveredMovie(movie);
-    };
+const SwiperComponent = ({ data, title }) => {
+    const navigate = useNavigate();
 
-    const handleMouseLeave = () => {
-        setHoveredMovie(null);
+    const handleMovieClick = (movieId) => {
+        navigate(`/movie/${movieId}`);
     };
 
     return (
         <>
-            <h2 className="text-white md:p-4 lg:p-8 font-bold text-3xl">{title}</h2>
+            <h3 className="bg-gradient-to-r from-gray-200  to-gray-500 bg-clip-text text-transparent  md:p-4 lg:p-8 font-bold text-2xl">{title}</h3>
             <Swiper
                 slidesPerView={3}
                 centeredSlides={false}
                 slidesPerGroupSkip={1}
                 grabCursor={true}
-                spaceBetween={8}
+                spaceBetween={10}
                 keyboard={{
                     enabled: true,
                 }}
@@ -40,37 +38,22 @@ const Swiper1 = ({ data, title }) => {
                         slidesPerGroup: 2,
                     },
                 }}
-                scrollbar={true}
                 navigation={true}
                 modules={[Keyboard, Scrollbar, Navigation, Pagination]}
-                className="mySwiper p-8"
+                className="mySwiper p-4"
             >
                 {data.map((movie) => (
                     <SwiperSlide
                         key={movie.id}
-                        className='hover:cursor-pointer hover:scale-105 transition duration-200 ease-in-out relative'
-                        onMouseEnter={() => handleMouseEnter(movie)}
-                        onMouseLeave={handleMouseLeave}
+                        className='hover:cursor-pointer hover:scale-105 transition duration-150 ease-in-out relative'
                         style={{ height: "250px" }}
+                        onClick={() => handleMovieClick(movie.id)}
                     >
                         <img
                             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                             alt={movie.title}
                             className="swiper-slide-img"
                         />
-                        {hoveredMovie === movie && movie.trailerUrl && (
-                            <div className="absolute inset-0 bg-black bg-opacity-75 flex items-center justify-center">
-                                <iframe
-                                    width="100%"
-                                    height="100%"
-                                    src={movie.trailerUrl}
-                                    frameBorder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowFullScreen
-                                    title="Trailer"
-                                ></iframe>
-                            </div>
-                        )}
                     </SwiperSlide>
                 ))}
             </Swiper>
@@ -78,4 +61,4 @@ const Swiper1 = ({ data, title }) => {
     );
 };
 
-export default Swiper1;
+export default SwiperComponent;
