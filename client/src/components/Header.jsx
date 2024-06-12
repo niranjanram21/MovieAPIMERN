@@ -41,7 +41,7 @@ const Header = () => {
                     <span className="bg-gradient-to-r from-white  to-gray-300 bg-clip-text text-transparent  title2">Cine</span>
                     <span className="bg-gradient-to-r from-red-400  to-red-600 bg-clip-text text-transparent  title1">Search</span>
                 </Link>
-                <nav className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center text-md font-bold">
+                <nav className=" md:mr-auto flex flex-wrap items-center text-base justify-center text-md font-bold">
                     <Link to="/" className="mr-5 bg-gradient-to-r from-gray-200  to-red-600 bg-clip-text text-transparent ">Home</Link>
                     <Link to="/tv" className="mr-5 bg-gradient-to-r from-gray-200  to-red-600 bg-clip-text text-transparent ">TV shows</Link>
                     <Link to="/movies" className="mr-5 bg-gradient-to-r from-gray-200  to-red-600 bg-clip-text text-transparent ">Movies</Link>

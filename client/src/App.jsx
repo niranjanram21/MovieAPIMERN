@@ -7,6 +7,8 @@ import Movies from './pages/Movies'
 import Mylist from './pages/Mylist'
 import MovieDetail from './pages/MovieDetail'
 import SearchResults from './pages/SearchResults'
+import GenreMovies from './components/GenreMovies'
+import GenreTV from './components/GenreTV'
 
 const App = () => {
   return (
@@ -19,6 +21,8 @@ const App = () => {
         <Route path='/mylist' element={<Mylist />}></Route>
         <Route path="/movie/:id" element={<MovieDetail />} />
         <Route path="/search" element={<SearchResults />} />
+        <Route path="/movies/genre/:genreId" element={<GenreMovies />} />
+        <Route path="/tv/genre/:genreId" element={<GenreTV />} />
       </Routes>
     </BrowserRouter>
   )

@@ -1,24 +1,32 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import AiringTodayTV from '../components/Tv/AiringTodayTV';
-import OnTheAirTV from '../components/Tv/OnTheAirTV';
-import TopRated from '../components/Tv/TopRated';
-import PopularTV from '../components/Tv/PopularTV';
-import { fetchTVGenres } from '../store/movieSlice';
+import { useParams, useNavigate } from 'react-router-dom';
+import { fetchTVShowsByGenre, fetchTVGenres } from '../store/movieSlice';
+import Header from './Header';
+import Footer from './Footer';
+import ItemCard from './ItemCard';
 
-const TV = () => {
+const GenreTV = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const genres = useSelector((state) => state.movies.tvGenres);
     const [selectedGenre, setSelectedGenre] = useState('');
 
+    const { genreId } = useParams();
+    const tvShows = useSelector((state) => state.movies.tvShowsByGenre);
+    const status = useSelector((state) => state.movies.status);
+
     useEffect(() => {
         dispatch(fetchTVGenres());
         console.log('TV genres fetched');
     }, [dispatch]);
+
+    useEffect(() => {
+        if (genreId) {
+            dispatch(fetchTVShowsByGenre(genreId));
+            console.log('TV shows fetched');
+        }
+    }, [dispatch, genreId]);
 
     const handleGenreChange = (e) => {
         setSelectedGenre(e.target.value);
@@ -32,7 +40,7 @@ const TV = () => {
             <Header />
             <div className="py-4 px-8 mb-4">
                 <div className="mb-4">
-                    <label htmlFor="genre" className="block text-white font-bold mb-2">Select Genre:</label>
+                    <label htmlFor="genre" className="block text-white text-lg font-bold mb-2">Filter by Genre:</label>
                     <select
                         id="genre"
                         value={selectedGenre}
@@ -45,14 +53,21 @@ const TV = () => {
                         ))}
                     </select>
                 </div>
-                <OnTheAirTV />
-                <TopRated />
-                <AiringTodayTV />
-                <PopularTV />
+                <h2 className="text-white text-2xl font-bold mb-4">TV Shows</h2>
+                {status === "loading" && <p className="text-white">Loading...</p>}
+                {status === "failed" && <p className="text-white">Failed to load TV shows.</p>}
+                {status === "succeeded" && (
+                    <div className="grid grid-cols-6 gap-4">
+                        {tvShows.map((show) => (
+                            <ItemCard id={show.id} detailPage={show.id} title={show.title} poster={show.poster_path} vote={show.vote_average} />
+                        ))}
+
+                    </div>
+                )}
             </div>
             <Footer />
         </>
     );
 };
 
-export default TV;
+export default GenreTV;

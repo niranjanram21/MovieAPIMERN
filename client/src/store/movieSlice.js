@@ -115,6 +115,47 @@ export const fetchSearchResults = createAsyncThunk(
   }
 );
 
+// Genre Queries
+export const fetchMovieGenres = createAsyncThunk(
+  "movies/fetchMovieGenres",
+  async () => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/genre/movie/list?api_key=${API_KEY}`
+    );
+    return response.data.genres;
+  }
+);
+
+export const fetchTVGenres = createAsyncThunk(
+  "movies/fetchTVGenres",
+  async () => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/genre/tv/list?api_key=${API_KEY}`
+    );
+    return response.data.genres;
+  }
+);
+
+export const fetchTVShowsByGenre = createAsyncThunk(
+  "movies/fetchTVShowsByGenre",
+  async (genreId) => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/discover/tv?api_key=${API_KEY}&with_genres=${genreId}`
+    );
+    return response.data.results;
+  }
+);
+
+export const fetchMoviesByGenre = createAsyncThunk(
+  "movies/fetchMoviesByGenre",
+  async (genreId) => {
+    const response = await axios.get(
+      `${TMDB_BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}`
+    );
+    return response.data.results;
+  }
+);
+
 const movieSlice = createSlice({
   name: "movies",
   initialState: {
@@ -133,6 +174,10 @@ const movieSlice = createSlice({
       tvShows: [],
       people: [],
     },
+    movieGenres: [],
+    tvGenres: [],
+    moviesByGenre: [],
+    tvShowsByGenre: [],
     status: "idle",
     error: null,
   },
@@ -190,6 +235,26 @@ const movieSlice = createSlice({
         }
       })
       .addCase(fetchSearchResults.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(fetchMovieGenres.fulfilled, (state, action) => {
+        state.movieGenres = action.payload;
+      })
+      .addCase(fetchTVGenres.fulfilled, (state, action) => {
+        state.tvGenres = action.payload;
+      })
+      .addCase(fetchMoviesByGenre.fulfilled, (state, action) => {
+        state.moviesByGenre = action.payload;
+      })
+      .addCase(fetchTVShowsByGenre.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchTVShowsByGenre.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.tvShowsByGenre = action.payload; // Ensure this updates correctly
+      })
+      .addCase(fetchTVShowsByGenre.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       });
