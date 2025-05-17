@@ -66,6 +66,7 @@ const Header = () => {
                         <option value="tv">TV Shows</option>
                         <option value="person">People</option>
                     </select>
+                    <button type="submit" className="hidden">Search</button>
                 </form>
                 <button
                     onClick={handleLogout}
